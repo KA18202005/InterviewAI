@@ -1,6 +1,8 @@
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
+import json
+from json_repair import repair_json
 
 load_dotenv()
 
@@ -15,20 +17,21 @@ model = genai.GenerativeModel(
 def analyze_resume(resume_text):
 
     prompt = f"""
-    Analyze this resume.
+    Analyze the resume and return ONLY valid JSON.
 
-    Return:
-
-    1. Skills
-    2. Projects
-    3. Strengths
-    4. Weaknesses
+    {{
+        "skills": [],
+        "projects": [],
+        "strengths": [],
+        "weaknesses": []
+    }}
 
     Resume:
-
     {resume_text}
     """
 
     response = model.generate_content(prompt)
 
-    return response.text
+    fixed_json = repair_json(response.text)
+
+    return json.loads(fixed_json)
