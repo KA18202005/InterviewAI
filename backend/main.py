@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-
+from fastapi.middleware.cors import CORSMiddleware
 from api.resume import router as resume_router
 from api.job import router as job_router
 from api.interview import router as interview_router
@@ -10,6 +10,16 @@ from api.interview_session import router as interview_session_router
 from api.dashboard import router as dashboard_router
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(resume_router)
 app.include_router(job_router)
