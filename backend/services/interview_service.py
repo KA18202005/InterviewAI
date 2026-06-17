@@ -31,3 +31,41 @@ def generate_interview_questions(
     fixed_json = repair_json(response.text)
 
     return json.loads(fixed_json)
+  
+def evaluate_answer(
+    question,
+    answer
+):
+
+    prompt = f"""
+    You are an expert technical interviewer.
+
+    Evaluate the candidate's answer.
+
+    Return ONLY valid JSON.
+
+    {{
+        "score": 0,
+        "strengths": [],
+        "improvements": [],
+        "feedback": ""
+    }}
+
+    Question:
+    {question}
+
+    Candidate Answer:
+    {answer}
+    """
+
+    response = model.generate_content(
+        prompt
+    )
+
+    fixed_json = repair_json(
+        response.text
+    )
+
+    return json.loads(
+        fixed_json
+    )

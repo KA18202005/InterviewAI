@@ -48,3 +48,46 @@ def get_user_interviews(email):
             }
         )
     )
+def save_answer(
+    session_id,
+    question,
+    answer,
+    score
+):
+
+    db.interviews.update_one(
+        {
+            "_id": ObjectId(
+                session_id
+            )
+        },
+        {
+            "$push": {
+                "answers": {
+                    "question": question,
+                    "answer": answer,
+                    "score": score
+                }
+            }
+        }
+    )
+
+def get_interviews_by_user(
+    email
+):
+
+    interviews = list(
+        db.interviews.find(
+            {
+                "user_email": email
+            }
+        )
+    )
+
+    for interview in interviews:
+
+        interview["_id"] = str(
+            interview["_id"]
+        )
+
+    return interviews

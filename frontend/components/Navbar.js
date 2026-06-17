@@ -44,6 +44,10 @@ export default function Navbar() {
           Roadmap
         </Link>
 
+        <Link href="/interview-history">
+          History
+        </Link>
+
         <button
           onClick={handleLogout}
           className="cursor-pointer"

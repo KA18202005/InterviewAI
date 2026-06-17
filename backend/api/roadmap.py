@@ -1,16 +1,22 @@
 from fastapi import APIRouter
-from pydantic import BaseModel
 
-from services.roadmap_service import generate_roadmap
+from models.roadmap_model import (
+    RoadmapRequest
+)
+
+from services.roadmap_service import (
+    generate_learning_roadmap
+)
 
 router = APIRouter()
 
-class RoadmapRequest(BaseModel):
-    weaknesses: list[str]
 
 @router.post("/generate-roadmap")
-def roadmap(data: RoadmapRequest):
+def roadmap(
+    data: RoadmapRequest
+):
 
-    return generate_roadmap(
-        data.weaknesses
+    return generate_learning_roadmap(
+        data.resume_text,
+        data.target_role
     )

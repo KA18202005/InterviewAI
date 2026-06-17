@@ -9,6 +9,7 @@ from api.auth import router as auth_router
 from api.interview_session import router as interview_session_router
 from api.dashboard import router as dashboard_router
 
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,

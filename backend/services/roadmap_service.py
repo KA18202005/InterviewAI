@@ -3,29 +3,43 @@ import json
 from json_repair import repair_json
 
 
-def generate_roadmap(weaknesses):
+def generate_learning_roadmap(
+    resume_text,
+    target_role
+):
 
     prompt = f"""
-    Create a 4-week learning roadmap.
+    Create a personalized learning roadmap.
 
-    Weak Areas:
-    {weaknesses}
+    Resume:
+    {resume_text}
+
+    Target Role:
+    {target_role}
 
     Return ONLY valid JSON.
 
     {{
-      "roadmap":[
-        {{
-          "week":1,
-          "topic":"",
-          "resources":[]
-        }}
-      ]
+      "week_1": [],
+      "week_2": [],
+      "week_3": [],
+      "week_4": []
     }}
+
+    Each week should contain:
+    - skills to learn
+    - projects to build
+    - resources/topics to study
     """
 
-    response = model.generate_content(prompt)
+    response = model.generate_content(
+        prompt
+    )
 
-    fixed_json = repair_json(response.text)
+    fixed_json = repair_json(
+        response.text
+    )
 
-    return json.loads(fixed_json)
+    return json.loads(
+        fixed_json
+    )
