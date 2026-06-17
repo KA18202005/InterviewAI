@@ -8,6 +8,7 @@ from api.roadmap import router as roadmap_router
 from api.auth import router as auth_router
 from api.interview_session import router as interview_session_router
 from api.dashboard import router as dashboard_router
+from api.cover_letter import router as cover_router
 
 
 app = FastAPI()
@@ -30,6 +31,7 @@ app.include_router(roadmap_router)
 app.include_router(auth_router)
 app.include_router(interview_session_router)
 app.include_router(dashboard_router)
+app.include_router(cover_router)
 
 @app.get("/")
 def home():

@@ -67,7 +67,8 @@ def save_answer(
                     "question": question,
                     "answer": answer,
                     "score": score
-                }
+                },
+                "scores": score
             }
         }
     )

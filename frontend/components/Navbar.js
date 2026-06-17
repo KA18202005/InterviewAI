@@ -29,11 +29,19 @@ export default function Navbar() {
         </Link>
 
         <Link href="/resume">
-          Resume
+          Resume Analysis
         </Link>
 
         <Link href="/job-match">
           Job Match
+        </Link>
+
+        <Link href="/resume-history">
+          Resume History
+        </Link>
+        
+        <Link href="/cover-letter">
+          Cover Letter
         </Link>
 
         <Link href="/interview">
