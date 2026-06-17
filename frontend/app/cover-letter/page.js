@@ -1,36 +1,34 @@
 "use client";
 
-import { useState }
-from "react";
+import { useState } from "react";
 
-import Navbar
-from "@/components/Navbar";
+import Navbar from "@/components/Navbar";
+import Card from "@/components/Card";
+import jsPDF from "jspdf";
+import Button from "@/components/Button";
+import PageContainer from "@/components/PageContainer";
 
 import {
   generateCoverLetter
-}
-from "@/services/coverLetterService";
+} from "@/services/coverLetterService";
 
 export default function CoverLetterPage() {
 
-  const [resumeText,
-    setResumeText] =
-      useState("");
+  const [resumeText, setResumeText] =
+    useState("");
 
-  const [jobDescription,
-    setJobDescription] =
-      useState("");
+  const [jobDescription, setJobDescription] =
+    useState("");
 
-  const [coverLetter,
-    setCoverLetter] =
-      useState("");
+  const [coverLetter, setCoverLetter] =
+    useState("");
 
-  const [loading,
-    setLoading] =
-      useState(false);
+  const [loading, setLoading] =
+    useState(false);
 
   const handleGenerate =
     async () => {
+
 
       try {
 
@@ -62,113 +60,233 @@ export default function CoverLetterPage() {
 
     };
 
+
   const copyLetter = () => {
+
 
     navigator.clipboard.writeText(
       coverLetter
     );
 
     alert(
-      "Copied!"
+      "Cover Letter Copied!"
+    );
+
+
+  };
+
+  const downloadPDF = () => {
+
+    const pdf =
+      new jsPDF();
+
+    const pageWidth = 180;
+
+    const lines =
+      pdf.splitTextToSize(
+        coverLetter,
+        pageWidth
+      );
+
+    let y = 20;
+
+    lines.forEach(
+      (line) => {
+
+        if (y > 280) {
+
+          pdf.addPage();
+
+          y = 20;
+
+        }
+
+        pdf.text(
+          line,
+          15,
+          y
+        );
+
+        y += 8;
+
+      }
+    );
+
+    pdf.save(
+      "cover-letter.pdf"
     );
 
   };
 
   return (
+
+
     <>
       <Navbar />
 
-      <div className="p-10 max-w-6xl mx-auto">
+      <PageContainer>
 
-        <h1 className="text-4xl font-bold mb-8">
-          Cover Letter Generator
-        </h1>
+        <Card className="mb-10">
 
-        <textarea
-          placeholder="Paste Resume Text"
-          value={resumeText}
-          onChange={(e) =>
-            setResumeText(
-              e.target.value
-            )
-          }
-          className="border p-4 rounded-lg w-full h-52 mb-6"
-        />
+          <h1 className="text-4xl font-bold mb-4">
+            Cover Letter Generator
+          </h1>
 
-        <textarea
-          placeholder="Paste Job Description"
-          value={jobDescription}
-          onChange={(e) =>
-            setJobDescription(
-              e.target.value
-            )
-          }
-          className="border p-4 rounded-lg w-full h-52 mb-6"
-        />
+          <p className="text-zinc-400 mb-6">
+            Generate a professional cover letter
+            tailored to any job description using
+            your resume.
+          </p>
 
-        <button
-          onClick={handleGenerate}
-          className="
-            bg-black
-            text-white
-            px-6
-            py-3
-            rounded
+          <div className="grid md:grid-cols-2 gap-6">
+
+            <textarea
+              placeholder="Paste Resume Text"
+              value={resumeText}
+              onChange={(e) =>
+                setResumeText(
+                  e.target.value
+                )
+              }
+              className="
+          border
+          border-zinc-700
+          rounded-xl
+          p-4
+          h-64
           "
-        >
+            />
 
-          {
-            loading
-              ? "Generating..."
-              : "Generate Cover Letter"
-          }
+            <textarea
+              placeholder="Paste Job Description"
+              value={jobDescription}
+              onChange={(e) =>
+                setJobDescription(
+                  e.target.value
+                )
+              }
+              className="
+          border
+          border-zinc-700
+          rounded-xl
+          p-4
+          h-64
+          "
+            />
 
-        </button>
+          </div>
+
+          <div className="mt-6">
+
+            <Button
+              onClick={
+                handleGenerate
+              }
+            >
+              {
+                loading
+                  ? "Generating..."
+                  : "Generate Cover Letter"
+              }
+            </Button>
+
+          </div>
+
+        </Card>
 
         {
           coverLetter && (
 
-            <div className="mt-10">
+            <Card>
 
-              <div className="flex justify-between mb-4">
+              <div
+                className="
+            flex
+            flex-col
+            md:flex-row
+            md:justify-between
+            md:items-center
+            gap-4
+            mb-6
+            "
+              >
 
-                <h2 className="text-2xl font-bold">
-                  Generated Cover Letter
-                </h2>
+                <div>
 
-                <button
-                  onClick={copyLetter}
+                  <h2
+                    className="
+                text-3xl
+                font-bold
+                "
+                  >
+                    Generated Cover Letter
+                  </h2>
+
+                  <p
+                    className="
+                text-zinc-400
+                mt-2
+                "
+                  >
+                    Review, edit and copy before
+                    sending to employers.
+                  </p>
+
+                </div>
+
+                <div
+                  className="flex gap-3">
+                  <Button
+                    onClick={copyLetter}
+                  >
+                    📋 Copy Letter
+                  </Button>
+
+                  <Button
+                    onClick={downloadPDF}
+                  >
+                    ⬇ Download PDF
+                  </Button>
+
+                </div>
+              </div>
+
+              <div
+                className="
+            bg-zinc-900
+            border
+            border-zinc-800
+            rounded-2xl
+            p-6
+            "
+              >
+
+                <textarea
+                  value={coverLetter}
+                  readOnly
                   className="
-                    bg-green-600
-                    text-white
-                    px-4
-                    py-2
-                    rounded
-                  "
-                >
-                  Copy
-                </button>
+              w-full
+              h-175
+              bg-transparent
+              resize-none
+              outline-none
+              text-zinc-300
+              leading-8
+              "
+                />
 
               </div>
 
-              <textarea
-                value={coverLetter}
-                readOnly
-                className="
-                  border
-                  p-4
-                  rounded-lg
-                  w-full
-                  h-[600px]
-                "
-              />
-
-            </div>
+            </Card>
 
           )
         }
 
-      </div>
+      </PageContainer>
+
     </>
+
+
   );
+
 }

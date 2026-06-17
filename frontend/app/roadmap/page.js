@@ -3,6 +3,9 @@
 import { useState } from "react";
 
 import Navbar from "@/components/Navbar";
+import Card from "@/components/Card";
+import Button from "@/components/Button";
+import PageContainer from "@/components/PageContainer";
 
 import {
   generateRoadmap
@@ -12,22 +15,23 @@ export default function RoadmapPage() {
 
   const [resumeText,
     setResumeText] =
-      useState("");
+    useState("");
 
   const [targetRole,
     setTargetRole] =
-      useState("");
+    useState("");
 
   const [roadmap,
     setRoadmap] =
-      useState(null);
+    useState(null);
 
   const [loading,
     setLoading] =
-      useState(false);
+    useState(false);
 
   const handleGenerate =
     async () => {
+
 
       try {
 
@@ -57,106 +61,241 @@ export default function RoadmapPage() {
 
     };
 
+
   return (
+
+
     <>
       <Navbar />
 
-      <div className="p-10 max-w-6xl mx-auto">
+      <PageContainer>
 
-        <h1 className="text-4xl font-bold mb-8">
-          Learning Roadmap
-        </h1>
+        {/* Header */}
 
-        <textarea
-          placeholder="Paste Resume Text"
-          value={resumeText}
-          onChange={(e) =>
-            setResumeText(
-              e.target.value
-            )
-          }
-          className="border p-4 rounded-lg w-full h-52 mb-6"
-        />
+        <Card className="mb-10">
 
-        <input
-          type="text"
-          placeholder="Target Role"
-          value={targetRole}
-          onChange={(e) =>
-            setTargetRole(
-              e.target.value
-            )
-          }
-          className="border p-4 rounded-lg w-full mb-6"
-        />
+          <h1
+            className="
+        text-4xl
+        font-bold
+        mb-4
+        "
+          >
+            Learning Roadmap
+          </h1>
 
-        <button
-          onClick={handleGenerate}
-          className="bg-black text-white px-6 py-3 rounded"
-        >
+          <p
+            className="
+        text-zinc-400
+        mb-6
+        "
+          >
+            Generate a personalized roadmap
+            based on your current skills and
+            target role.
+          </p>
 
-          {
-            loading
-              ? "Generating..."
-              : "Generate Roadmap"
-          }
+          <textarea
+            placeholder="Paste Resume Text"
+            value={resumeText}
+            onChange={(e) =>
+              setResumeText(
+                e.target.value
+              )
+            }
+            className="
+        border
+        border-zinc-700
+        rounded-xl
+        p-4
+        w-full
+        h-52
+        mb-6
+        "
+          />
 
-        </button>
+          <input
+            type="text"
+            placeholder="Target Role (e.g. Backend Developer)"
+            value={targetRole}
+            onChange={(e) =>
+              setTargetRole(
+                e.target.value
+              )
+            }
+            className="
+        border
+        border-zinc-700
+        rounded-xl
+        p-4
+        w-full
+        mb-6
+        "
+          />
+
+          <Button
+            onClick={
+              handleGenerate
+            }
+          >
+            {
+              loading
+                ? "Generating..."
+                : "Generate Roadmap"
+            }
+          </Button>
+
+        </Card>
 
         {
           roadmap && (
 
-            <div className="mt-10 grid md:grid-cols-2 gap-6">
+            <div
+              className="
+          space-y-8
+          "
+            >
+
+              <Card>
+
+                <h2
+                  className="
+              text-3xl
+              font-bold
+              mb-3
+              "
+                >
+                  Your Learning Journey
+                </h2>
+
+                <p
+                  className="
+              text-zinc-400
+              "
+                >
+                  Follow this roadmap step by step
+                  to become a stronger
+                  {` ${targetRole}`}
+                </p>
+
+              </Card>
 
               {
                 Object.entries(
                   roadmap
                 ).map(
                   (
-                    [week, tasks]
+                    [week, tasks],
+                    index
                   ) => (
 
                     <div
                       key={week}
                       className="
-                        border
-                        rounded-lg
-                        p-5
-                        shadow-lg
-                      "
+                  flex
+                  gap-5
+                  "
                     >
 
-                      <h2 className="text-2xl font-bold mb-4 capitalize">
+                      {/* Timeline Dot */}
+
+                      <div
+                        className="
+                    flex
+                    flex-col
+                    items-center
+                    "
+                      >
+
+                        <div
+                          className="
+                      h-10
+                      w-10
+                      rounded-full
+                      bg-blue-600
+                      flex
+                      items-center
+                      justify-center
+                      font-bold
+                      "
+                        >
+                          {
+                            index + 1
+                          }
+                        </div>
 
                         {
-                          week.replace(
-                            "_",
-                            " "
+                          index <
+                          Object.entries(
+                            roadmap
+                          ).length - 1 && (
+
+                            <div
+                              className="
+                          w-1
+                          h-full
+                          bg-zinc-800
+                          "
+                            />
+
                           )
                         }
 
-                      </h2>
+                      </div>
 
-                      <ul className="list-disc ml-6 space-y-2">
+                      {/* Roadmap Card */}
 
-                        {
-                          tasks.map(
-                            (
-                              task,
-                              index
-                            ) => (
+                      <Card className="flex-1">
 
-                              <li
-                                key={index}
-                              >
-                                {task}
-                              </li>
-
+                        <h2
+                          className="
+                      text-2xl
+                      font-bold
+                      mb-4
+                      capitalize
+                      "
+                        >
+                          {
+                            week.replace(
+                              "_",
+                              " "
                             )
-                          )
-                        }
+                          }
+                        </h2>
 
-                      </ul>
+                        <div
+                          className="
+                      space-y-3
+                      "
+                        >
+
+                          {
+                            tasks.map(
+                              (
+                                task,
+                                i
+                              ) => (
+
+                                <div
+                                  key={i}
+                                  className="
+                              bg-blue-500/10
+                              border
+                              border-blue-500/20
+                              rounded-xl
+                              p-3
+                              "
+                                >
+                                  ✅ {task}
+                                </div>
+
+                              )
+                            )
+                          }
+
+                        </div>
+
+                      </Card>
 
                     </div>
 
@@ -169,7 +308,11 @@ export default function RoadmapPage() {
           )
         }
 
-      </div>
+      </PageContainer>
+
     </>
+
+
   );
+
 }

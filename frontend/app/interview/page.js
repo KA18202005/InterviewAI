@@ -3,16 +3,24 @@
 import { useState } from "react";
 
 import Navbar from "@/components/Navbar";
+import Card from "@/components/Card";
+import Button from "@/components/Button";
+import PageContainer from "@/components/PageContainer";
+import ScoreCircle from "@/components/ScoreCircle";
 
 import { startInterview } from "@/services/interviewService";
-
-import { evaluateAnswer }
-  from "@/services/interviewEvaluationService";
+import { evaluateAnswer } from "@/services/interviewEvaluationService";
 
 export default function InterviewPage() {
 
   const [resumeText, setResumeText] =
     useState("");
+
+  const [isRecording, setIsRecording] =
+    useState(false);
+
+  const [recognition, setRecognition] =
+    useState(null);
 
   const [jobDescription, setJobDescription] =
     useState("");
@@ -37,6 +45,7 @@ export default function InterviewPage() {
 
   const handleGenerate = async () => {
 
+
     try {
 
       setLoading(true);
@@ -45,8 +54,8 @@ export default function InterviewPage() {
         await startInterview(
           resumeText,
           jobDescription
-
         );
+
       setSessionId(
         data.session_id
       );
@@ -68,9 +77,12 @@ export default function InterviewPage() {
       setLoading(false);
 
     }
+
+
   };
 
   const handleEvaluate = async () => {
+
 
     try {
 
@@ -81,7 +93,9 @@ export default function InterviewPage() {
           answer
         );
 
-      setEvaluation(result);
+      setEvaluation(
+        result
+      );
 
     } catch (error) {
 
@@ -89,161 +103,290 @@ export default function InterviewPage() {
 
     }
 
+
   };
 
+  const startRecording = () => {
+
+    const SpeechRecognition =
+      window.SpeechRecognition ||
+      window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+
+      alert(
+        "Speech Recognition not supported"
+      );
+
+      return;
+
+    }
+
+    const recognitionInstance =
+      new SpeechRecognition();
+
+    recognitionInstance.continuous = true;
+    recognitionInstance.interimResults = true;
+    recognitionInstance.lang = "en-US";
+
+    recognitionInstance.onstart = () => {
+
+      setIsRecording(true);
+
+    };
+
+    recognitionInstance.onend = () => {
+
+      setIsRecording(false);
+
+    };
+
+    recognitionInstance.onresult = (
+      event
+    ) => {
+
+      let transcript = "";
+
+      for (
+        let i = 0;
+        i < event.results.length;
+        i++
+      ) {
+
+        transcript +=
+          event.results[i][0]
+            .transcript;
+
+      }
+
+      setAnswer(
+        transcript
+      );
+
+    };
+
+    setRecognition(
+      recognitionInstance
+    );
+
+    recognitionInstance.start();
+
+  };
+
+  const stopRecording = () => {
+
+    if (recognition) {
+
+      recognition.stop();
+
+      setIsRecording(false);
+
+    }
+
+  };
+
+  const renderQuestions = (
+    title,
+    color,
+    questionList
+  ) => (
+
+
+    <Card>
+
+      <h2
+        className={`text-2xl font-bold mb-5 ${color}`}
+      >
+        {title}
+      </h2>
+
+      <div className="space-y-3">
+
+        {
+          questionList?.map(
+            (q, index) => (
+
+              <div
+                key={index}
+                onClick={() => {
+
+                  setSelectedQuestion(
+                    q
+                  );
+
+                  setAnswer("");
+
+                  setEvaluation(
+                    null
+                  );
+
+                }}
+                className={`
+              p-4
+              rounded-xl
+              cursor-pointer
+              transition-all
+              border
+
+              ${selectedQuestion === q
+                    ? `
+                  border-blue-500
+                  bg-blue-500/10
+                  `
+                    : `
+                  border-zinc-800
+                  hover:border-zinc-600
+                  `
+                  }
+            `}
+              >
+                {q}
+              </div>
+
+            )
+          )
+        }
+
+      </div>
+
+    </Card>
+
+
+  );
+
   return (
+
+
     <>
       <Navbar />
 
-      <div className="p-10 max-w-6xl mx-auto">
+      <PageContainer>
 
-        <h1 className="text-4xl font-bold mb-8">
-          AI Interview Simulator
-        </h1>
+        <Card className="mb-10">
 
-        <div className="grid md:grid-cols-2 gap-6">
+          <h1 className="text-4xl font-bold mb-4">
+            AI Interview Simulator
+          </h1>
 
-          <textarea
-            placeholder="Paste Resume Text"
-            value={resumeText}
-            onChange={(e) =>
-              setResumeText(
-                e.target.value
-              )
-            }
-            className="border p-4 rounded-lg h-64"
-          />
+          <p className="text-zinc-400 mb-6">
+            Generate personalized interview
+            questions and receive AI-powered
+            evaluation.
+          </p>
 
-          <textarea
-            placeholder="Paste Job Description"
-            value={jobDescription}
-            onChange={(e) =>
-              setJobDescription(
-                e.target.value
-              )
-            }
-            className="border p-4 rounded-lg h-64"
-          />
+          <div className="grid md:grid-cols-2 gap-6">
 
-        </div>
+            <textarea
+              placeholder="Paste Resume Text"
+              value={resumeText}
+              onChange={(e) =>
+                setResumeText(
+                  e.target.value
+                )
+              }
+              className="
+          border
+          border-zinc-700
+          rounded-xl
+          p-4
+          h-64
+          "
+            />
 
-        <button
-          onClick={handleGenerate}
-          className="bg-black text-white px-6 py-3 rounded mt-6"
-        >
+            <textarea
+              placeholder="Paste Job Description"
+              value={jobDescription}
+              onChange={(e) =>
+                setJobDescription(
+                  e.target.value
+                )
+              }
+              className="
+          border
+          border-zinc-700
+          rounded-xl
+          p-4
+          h-64
+          "
+            />
 
-          {
-            loading
-              ? "Generating..."
-              : "Start Interview"
-          }
+          </div>
 
-        </button>
+          <div className="mt-6">
+
+            <Button
+              onClick={
+                handleGenerate
+              }
+            >
+              {
+                loading
+                  ? "Generating..."
+                  : "Start Interview"
+              }
+            </Button>
+
+          </div>
+
+        </Card>
 
         {
           questions && (
 
-            <div className="mt-10 space-y-10">
+            <div className="space-y-6">
 
-              {/* Technical */}
+              {
+                renderQuestions(
+                  "Technical Questions",
+                  "text-blue-400",
+                  questions.technical_questions
+                )
+              }
 
-              <div>
+              {
+                renderQuestions(
+                  "Behavioral Questions",
+                  "text-green-400",
+                  questions.behavioral_questions
+                )
+              }
 
-                <h2 className="text-2xl font-bold text-blue-500 mb-4">
-                  Technical Questions
-                </h2>
-
-                {
-                  questions.technical_questions?.map(
-                    (q, index) => (
-
-                      <div
-                        key={index}
-                        onClick={() => {
-                          setSelectedQuestion(q);
-                          setEvaluation(null);
-                          setAnswer("");
-                        }}
-                        className="border p-4 rounded mb-3 cursor-pointer hover:bg-gray-100">
-                        {q}
-                      </div>
-
-                    )
-                  )
-                }
-
-              </div>
-
-              {/* Behavioral */}
-
-              <div>
-
-                <h2 className="text-2xl font-bold text-green-500 mb-4">
-                  Behavioral Questions
-                </h2>
-
-                {
-                  questions.behavioral_questions?.map(
-                    (q, index) => (
-
-                      <div
-                        key={index}
-                        onClick={() =>
-                          setSelectedQuestion(q)
-                        }
-                        className="border p-4 rounded mb-3 cursor-pointer hover:bg-gray-100">
-
-                        {q}
-                      </div>
-
-                    )
-                  )
-                }
-
-              </div>
-
-              {/* Project */}
-
-              <div>
-
-                <h2 className="text-2xl font-bold text-purple-500 mb-4">
-                  Project Questions
-                </h2>
-
-                {
-                  questions.project_questions?.map(
-                    (q, index) => (
-
-                      <div
-                        key={index}
-                        onClick={() =>
-                          setSelectedQuestion(q)
-                        }
-                        className="border p-4 rounded mb-3 cursor-pointer hover:bg-gray-100">
-                        {q}
-                      </div>
-
-                    )
-                  )
-                }
-
-              </div>
+              {
+                renderQuestions(
+                  "Project Questions",
+                  "text-purple-400",
+                  questions.project_questions
+                )
+              }
 
             </div>
 
           )
-
         }
+
         {
           selectedQuestion && (
 
-            <div className="mt-10">
+            <Card className="mt-10">
 
-              <h2 className="text-2xl font-bold mb-4">
+              <h2
+                className="
+            text-2xl
+            font-bold
+            mb-4
+            "
+              >
                 Selected Question
               </h2>
 
-              <div className="border p-4 rounded mb-4">
+              <div
+                className="
+            bg-zinc-900
+            rounded-xl
+            p-5
+            mb-5
+            "
+              >
                 {selectedQuestion}
               </div>
 
@@ -255,98 +398,192 @@ export default function InterviewPage() {
                     e.target.value
                   )
                 }
-                className="border p-4 rounded w-full h-40"
+                className="
+            border
+            border-zinc-700
+            rounded-xl
+            p-4
+            w-full
+            h-48
+            "
               />
 
-              <button
-                onClick={handleEvaluate}
-                className="bg-green-600 text-white px-6 py-3 rounded mt-4">
-                Evaluate Answer
-              </button>
+              <div className="mt-5">
 
-            </div>
+                <div className="flex gap-4 mt-5 flex-wrap">
+
+                  {
+                    !isRecording ? (
+
+                      <Button
+                        onClick={startRecording}
+                      >
+                        🎙 Start Recording
+                      </Button>
+
+                    ) : (
+
+                      <Button
+                        onClick={stopRecording}
+                      >
+                        ⏹ Stop Recording
+                      </Button>
+
+                    )
+                  }
+
+                  <Button
+                    onClick={handleEvaluate}
+                  >
+                    Evaluate Answer
+                  </Button>
+
+                </div>
+
+              </div>
+
+            </Card>
 
           )
         }
+
         {
           evaluation && (
 
-            <div className="mt-10 space-y-6">
+            <div className="space-y-6 mt-10">
 
-              <div className="bg-green-600 text-white p-5 rounded">
+              <Card>
 
-                <h2 className="text-2xl font-bold">
-                  Score
-                </h2>
+                <ScoreCircle
+                  score={
+                    evaluation.score
+                  }
+                  label="Interview Score"
+                />
 
-                <p className="text-5xl">
-                  {evaluation.score}/100
+              </Card>
+
+              <div className="grid md:grid-cols-2 gap-6">
+
+                <Card>
+
+                  <h3
+                    className="
+                text-2xl
+                font-bold
+                text-green-400
+                mb-5
+                "
+                  >
+                    Strengths
+                  </h3>
+
+                  <div className="space-y-3">
+
+                    {
+                      evaluation.strengths?.map(
+                        (
+                          item,
+                          index
+                        ) => (
+
+                          <div
+                            key={index}
+                            className="
+                        bg-green-500/10
+                        p-3
+                        rounded-xl
+                        "
+                          >
+                            ✓ {item}
+                          </div>
+
+                        )
+                      )
+                    }
+
+                  </div>
+
+                </Card>
+
+                <Card>
+
+                  <h3
+                    className="
+                text-2xl
+                font-bold
+                text-red-400
+                mb-5
+                "
+                  >
+                    Improvements
+                  </h3>
+
+                  <div className="space-y-3">
+
+                    {
+                      evaluation.improvements?.map(
+                        (
+                          item,
+                          index
+                        ) => (
+
+                          <div
+                            key={index}
+                            className="
+                        bg-red-500/10
+                        p-3
+                        rounded-xl
+                        "
+                          >
+                            ⚠ {item}
+                          </div>
+
+                        )
+                      )
+                    }
+
+                  </div>
+
+                </Card>
+
+              </div>
+
+              <Card>
+
+                <h3
+                  className="
+              text-2xl
+              font-bold
+              mb-4
+              "
+                >
+                  Detailed Feedback
+                </h3>
+
+                <p
+                  className="
+              text-zinc-300
+              leading-8
+              "
+                >
+                  {
+                    evaluation.feedback
+                  }
                 </p>
 
-              </div>
-
-              <div>
-
-                <h3 className="text-xl font-bold text-green-500">
-                  Strengths
-                </h3>
-
-                <ul className="list-disc ml-6">
-
-                  {
-                    evaluation.strengths?.map(
-                      (item, index) => (
-                        <li key={index}>
-                          {item}
-                        </li>
-                      )
-                    )
-                  }
-
-                </ul>
-
-              </div>
-
-              <div>
-
-                <h3 className="text-xl font-bold text-red-500">
-                  Improvements
-                </h3>
-
-                <ul className="list-disc ml-6">
-
-                  {
-                    evaluation.improvements?.map(
-                      (item, index) => (
-                        <li key={index}>
-                          {item}
-                        </li>
-                      )
-                    )
-                  }
-
-                </ul>
-
-              </div>
-
-              <div>
-
-                <h3 className="text-xl font-bold">
-                  Feedback
-                </h3>
-
-                <p>
-                  {evaluation.feedback}
-                </p>
-
-              </div>
+              </Card>
 
             </div>
 
           )
         }
 
-      </div>
+      </PageContainer>
+
     </>
+
+
   );
+
 }

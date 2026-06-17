@@ -3,6 +3,10 @@
 import { useState } from "react";
 
 import Navbar from "@/components/Navbar";
+import Card from "@/components/Card";
+import Button from "@/components/Button";
+import PageContainer from "@/components/PageContainer";
+import ScoreCircle from "@/components/ScoreCircle";
 
 import { matchJob } from "@/services/jobService";
 
@@ -26,10 +30,11 @@ export default function JobMatchPage() {
 
       setLoading(true);
 
-      const data = await matchJob(
-        resumeText,
-        jobDescription
-      );
+      const data =
+        await matchJob(
+          resumeText,
+          jobDescription
+        );
 
       setResult(data);
 
@@ -37,166 +42,307 @@ export default function JobMatchPage() {
 
       console.log(error);
 
-      alert("Matching Failed");
+      alert(
+        "Matching Failed"
+      );
 
     } finally {
 
       setLoading(false);
 
     }
+
   };
 
   return (
+
     <>
       <Navbar />
 
-      <div className="p-10 max-w-6xl mx-auto">
+      <PageContainer>
 
-        <h1 className="text-4xl font-bold mb-8">
-          Job Match Analyzer
-        </h1>
+        {/* Header */}
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <Card className="mb-10">
 
-          <textarea
-            placeholder="Paste Resume Text Here..."
-            value={resumeText}
-            onChange={(e) =>
-              setResumeText(
-                e.target.value
-              )
-            }
-            className="border p-4 rounded-lg h-64"
-          />
+          <h1
+            className="
+            text-4xl
+            font-bold
+            mb-4
+            "
+          >
+            Job Match Analyzer
+          </h1>
 
-          <textarea
-            placeholder="Paste Job Description Here..."
-            value={jobDescription}
-            onChange={(e) =>
-              setJobDescription(
-                e.target.value
-              )
-            }
-            className="border p-4 rounded-lg h-64"
-          />
+          <p
+            className="
+            text-zinc-400
+            mb-6
+            "
+          >
+            Compare your resume with a job
+            description and discover missing
+            skills, matching skills and
+            improvement opportunities.
+          </p>
 
-        </div>
+          <div
+            className="
+            grid
+            md:grid-cols-2
+            gap-6
+            "
+          >
 
-        <button
-          onClick={handleMatch}
-          className="bg-black text-white px-6 py-3 rounded mt-6"
-        >
+            <textarea
+              placeholder="Paste Resume Text Here..."
+              value={resumeText}
+              onChange={(e) =>
+                setResumeText(
+                  e.target.value
+                )
+              }
+              className="
+              border
+              border-zinc-700
+              rounded-xl
+              p-4
+              h-64
+              w-full
+              "
+            />
 
-          {
-            loading
-              ? "Analyzing..."
-              : "Match Resume"
-          }
+            <textarea
+              placeholder="Paste Job Description Here..."
+              value={jobDescription}
+              onChange={(e) =>
+                setJobDescription(
+                  e.target.value
+                )
+              }
+              className="
+              border
+              border-zinc-700
+              rounded-xl
+              p-4
+              h-64
+              w-full
+              "
+            />
 
-        </button>
+          </div>
+
+          <div className="mt-6">
+
+            <Button
+              onClick={handleMatch}
+            >
+              {
+                loading
+                  ? "Analyzing..."
+                  : "Match Resume"
+              }
+            </Button>
+
+          </div>
+
+        </Card>
 
         {
           result && (
 
-            <div className="mt-10 space-y-8">
+            <div
+              className="
+              space-y-10
+              "
+            >
 
               {/* Score */}
 
-              <div className="bg-green-600 text-white p-6 rounded-lg">
+              <Card>
 
-                <h2 className="text-2xl font-bold">
-                  Match Score
-                </h2>
-
-                <p className="text-5xl mt-2">
-                  {result.match_score}%
-                </p>
-
-              </div>
-
-              {/* Matching Skills */}
-
-              <div>
-
-                <h3 className="text-2xl font-semibold mb-4 text-green-500">
-                  Matching Skills
-                </h3>
-
-                <div className="flex flex-wrap gap-2">
-
-                  {
-                    result.matching_skills?.map(
-                      (skill, index) => (
-                        <span
-                          key={index}
-                          className="bg-green-500 text-white px-3 py-1 rounded-full"
-                        >
-                          {skill}
-                        </span>
-                      )
-                    )
+                <ScoreCircle
+                  score={
+                    result.match_score
                   }
+                  label="Match Score"
+                />
 
-                </div>
+              </Card>
 
-              </div>
+              {/* Skills */}
 
-              {/* Missing Skills */}
+              <div
+                className="
+                grid
+                md:grid-cols-2
+                gap-6
+                "
+              >
 
-              <div>
+                {/* Matching */}
 
-                <h3 className="text-2xl font-semibold mb-4 text-red-500">
-                  Missing Skills
-                </h3>
+                <Card>
 
-                <div className="flex flex-wrap gap-2">
+                  <h2
+                    className="
+                    text-2xl
+                    font-bold
+                    text-green-400
+                    mb-5
+                    "
+                  >
+                    Matching Skills
+                  </h2>
 
-                  {
-                    result.missing_skills?.map(
-                      (skill, index) => (
-                        <span
-                          key={index}
-                          className="bg-red-500 text-white px-3 py-1 rounded-full"
-                        >
-                          {skill}
-                        </span>
+                  <div
+                    className="
+                    flex
+                    flex-wrap
+                    gap-3
+                    "
+                  >
+
+                    {
+                      result.matching_skills?.map(
+                        (
+                          skill,
+                          index
+                        ) => (
+
+                          <span
+                            key={index}
+                            className="
+                            bg-green-500
+                            text-white
+                            px-4
+                            py-2
+                            rounded-full
+                            text-sm
+                            "
+                          >
+                            {skill}
+                          </span>
+
+                        )
                       )
-                    )
-                  }
+                    }
 
-                </div>
+                  </div>
+
+                </Card>
+
+                {/* Missing */}
+
+                <Card>
+
+                  <h2
+                    className="
+                    text-2xl
+                    font-bold
+                    text-red-400
+                    mb-5
+                    "
+                  >
+                    Missing Skills
+                  </h2>
+
+                  <div
+                    className="
+                    flex
+                    flex-wrap
+                    gap-3
+                    "
+                  >
+
+                    {
+                      result.missing_skills?.map(
+                        (
+                          skill,
+                          index
+                        ) => (
+
+                          <span
+                            key={index}
+                            className="
+                            bg-red-500
+                            text-white
+                            px-4
+                            py-2
+                            rounded-full
+                            text-sm
+                            "
+                          >
+                            {skill}
+                          </span>
+
+                        )
+                      )
+                    }
+
+                  </div>
+
+                </Card>
 
               </div>
 
               {/* Suggestions */}
 
-              <div>
+              <Card>
 
-                <h3 className="text-2xl font-semibold mb-4">
+                <h2
+                  className="
+                  text-2xl
+                  font-bold
+                  mb-6
+                  "
+                >
                   Suggestions
-                </h3>
+                </h2>
 
-                <ul className="list-disc ml-6 space-y-2">
+                <div
+                  className="
+                  space-y-4
+                  "
+                >
 
                   {
                     result.suggestions?.map(
-                      (item, index) => (
-                        <li key={index}>
-                          {item}
-                        </li>
+                      (
+                        item,
+                        index
+                      ) => (
+
+                        <div
+                          key={index}
+                          className="
+                          bg-blue-500/10
+                          border
+                          border-blue-500/20
+                          rounded-xl
+                          p-4
+                          "
+                        >
+                          💡 {item}
+                        </div>
+
                       )
                     )
                   }
 
-                </ul>
+                </div>
 
-              </div>
+              </Card>
 
             </div>
+
           )
         }
 
-      </div>
+      </PageContainer>
+
     </>
   );
+
 }

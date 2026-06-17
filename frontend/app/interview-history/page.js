@@ -1,164 +1,302 @@
 "use client";
 
-import { useEffect, useState }
-from "react";
+import { useEffect, useState } from "react";
 
-import Navbar
-from "@/components/Navbar";
+import Navbar from "@/components/Navbar";
+import Card from "@/components/Card";
+import PageContainer from "@/components/PageContainer";
 
 import {
-  getInterviewHistory
-}
-from "@/services/interviewHistoryService";
+getInterviewHistory
+} from "@/services/interviewHistoryService";
 
 export default function InterviewHistoryPage() {
 
-  const [interviews,
-    setInterviews] =
-      useState([]);
+const [interviews,
+setInterviews] =
+useState([]);
 
-  useEffect(() => {
+const [loading,
+setLoading] =
+useState(true);
 
-    const fetchHistory =
-      async () => {
+useEffect(() => {
 
-        try {
+ 
+const fetchHistory =
+  async () => {
 
-          const data =
-            await getInterviewHistory();
+    try {
 
-          setInterviews(
-            data
-          );
+      const data =
+        await getInterviewHistory();
 
-        } catch (error) {
+      setInterviews(
+        data
+      );
 
-          console.log(error);
+    } catch (error) {
 
-        }
+      console.log(error);
 
-      };
+    } finally {
 
-    fetchHistory();
+      setLoading(
+        false
+      );
 
-  }, []);
+    }
 
-  return (
-    <>
-      <Navbar />
+  };
 
-      <div className="p-10">
+fetchHistory();
+ 
 
-        <h1 className="text-4xl font-bold mb-8">
-          Interview History
-        </h1>
+}, []);
 
-        {
-          interviews.length === 0 ? (
+return (
 
-            <p>
-              No interviews found.
+ 
+<>
+  <Navbar />
+
+  <PageContainer>
+
+    <Card className="mb-10">
+
+      <h1
+        className="
+        text-4xl
+        font-bold
+        mb-3
+        "
+      >
+        Interview History
+      </h1>
+
+      <p
+        className="
+        text-zinc-400
+        "
+      >
+        Review all mock interviews,
+        performance and progress.
+      </p>
+
+    </Card>
+
+    {
+      loading ? (
+
+        <Card>
+
+          Loading interviews...
+
+        </Card>
+
+      ) : interviews.length === 0 ? (
+
+        <Card>
+
+          <div
+            className="
+            text-center
+            py-10
+            "
+          >
+
+            <h2
+              className="
+              text-2xl
+              font-bold
+              mb-2
+              "
+            >
+              No Interviews Found
+            </h2>
+
+            <p
+              className="
+              text-zinc-400
+              "
+            >
+              Complete your first mock
+              interview to see results here.
             </p>
 
-          ) : (
+          </div>
 
-            <div className="space-y-6">
+        </Card>
 
-              {
-                interviews.map(
+      ) : (
+
+        <div
+          className="
+          grid
+          md:grid-cols-2
+          gap-6
+          "
+        >
+
+          {
+            interviews.map(
+              (
+                interview,
+                index
+              ) => {
+
+                const scores =
+                  interview.answers?.map(
+                    (
+                      answer
+                    ) =>
+                      answer.score
+                  ) || [];
+
+                const average =
+                  scores.length
+                    ? (
+                        scores.reduce(
+                          (
+                            a,
+                            b
+                          ) =>
+                            a + b,
+                          0
+                        ) /
+                        scores.length
+                      ).toFixed(
+                        1
+                      )
+                    : 0;
+
+                const totalQuestions =
                   (
-                    interview,
-                    index
-                  ) => {
+                    interview.questions
+                      ?.technical_questions
+                      ?.length || 0
+                  ) +
+                  (
+                    interview.questions
+                      ?.behavioral_questions
+                      ?.length || 0
+                  ) +
+                  (
+                    interview.questions
+                      ?.project_questions
+                      ?.length || 0
+                  );
 
-                    const scores =
-                      interview.answers?.map(
-                        a => a.score
-                      ) || [];
+                return (
 
-                    const average =
-                      scores.length
-                        ? (
-                            scores.reduce(
-                              (a, b) =>
-                                a + b,
-                              0
-                            ) /
-                            scores.length
-                          ).toFixed(1)
-                        : 0;
+                  <Card
+                    key={
+                      interview._id
+                    }
+                  >
 
-                    return (
+                    <div
+                      className="
+                      flex
+                      justify-between
+                      items-start
+                      mb-5
+                      "
+                    >
 
-                      <div
-                        key={
-                          interview._id
-                        }
+                      <h2
                         className="
-                          border
-                          rounded-lg
-                          p-5
-                          shadow
+                        text-2xl
+                        font-bold
                         "
                       >
+                        Interview #
+                        {index + 1}
+                      </h2>
 
-                        <h2 className="text-2xl font-bold">
+                      <span
+                        className={`
+                        px-3
+                        py-1
+                        rounded-full
+                        text-sm
 
-                          Interview #
-                          {index + 1}
+                        ${
+                          interview.status === "completed"
+                            ? `
+                            bg-green-500/10
+                            text-green-400
+                            `
+                            : `
+                            bg-yellow-500/10
+                            text-yellow-400
+                            `
+                        }
+                      `}
+                      >
+                        {
+                          interview.status
+                        }
+                      </span>
 
-                        </h2>
+                    </div>
 
-                        <p>
-                          Status:
-                          {" "}
+                    <div
+                      className="
+                      space-y-3
+                      text-zinc-400
+                      "
+                    >
+
+                      <div>
+                        Questions:
+                        {" "}
+                        <span className="text-white font-semibold">
                           {
-                            interview.status
+                            totalQuestions
                           }
-                        </p>
+                        </span>
+                      </div>
 
-                        <p>
-                          Questions:
-                          {" "}
-                          {
-                            interview.questions
-                              ?.technical_questions
-                              ?.length || 0
-                          }
-                        </p>
-
-                        <p>
-                          Answers:
-                          {" "}
+                      <div>
+                        Answers Submitted:
+                        {" "}
+                        <span className="text-white font-semibold">
                           {
                             interview.answers
                               ?.length || 0
                           }
-                        </p>
-
-                        <p className="font-bold text-green-500">
-
-                          Average Score:
-                          {" "}
-                          {average}
-
-                        </p>
-
+                        </span>
                       </div>
 
-                    );
+                      <div>
+                        Average Score:
+                        {" "}
+                        <span className="text-green-400 font-bold">
+                          {average}
+                        </span>
+                      </div>
 
-                  }
-                )
+                    </div>
+
+                  </Card>
+
+                );
+
               }
+            )
+          }
 
-            </div>
+        </div>
 
-          )
-        }
+      )
+    }
 
-      </div>
+  </PageContainer>
 
-    </>
-  );
+</>
+ 
+
+);
+
 }
