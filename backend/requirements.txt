@@ -2,11 +2,13 @@ fastapi==0.116.1
 uvicorn[standard]==0.35.0
 
 pymongo==4.14.1
+motor==3.7.1
+
 python-dotenv==1.1.1
 pydantic==2.11.7
 python-multipart==0.0.20
 
-pymupdf==1.26.4
+PyMuPDF==1.26.4
 
 google-generativeai==0.8.5
 
@@ -20,8 +22,7 @@ pandas==2.3.1
 scikit-learn==1.7.1
 
 sentence-transformers==5.1.0
-
-motor==3.7.1
+torch==2.12.0
 
 jinja2==3.1.6
 
@@ -31,7 +32,9 @@ httpx==0.28.1
 
 email-validator==2.3.0
 
-bcrypt==4.0.1 
+bcrypt==4.0.1
 passlib==1.7.4
 
 python-jose==3.5.0
+
+reportlab==4.5.1
