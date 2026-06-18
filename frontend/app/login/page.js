@@ -11,72 +11,77 @@ import { loginUser } from "@/services/authService";
 
 export default function LoginPage() {
 
-const router = useRouter();
+  const router = useRouter();
 
-const [email, setEmail] =
-useState("");
+  const [email, setEmail] =
+    useState("");
 
-const [password, setPassword] =
-useState("");
+  const [password, setPassword] =
+    useState("");
 
-const [showPassword,
-setShowPassword] =
-useState(false);
+  const [showPassword,
+    setShowPassword] =
+    useState(false);
 
-const [loading,
-setLoading] =
-useState(false);
+  const [loading,
+    setLoading] =
+    useState(false);
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
 
- 
-e.preventDefault();
 
-try {
+    e.preventDefault();
 
-  setLoading(true);
+    try {
 
-  const data =
-    await loginUser(
-      email,
-      password
-    );
+      setLoading(true);
 
-  localStorage.setItem(
-    "token",
-    data.access_token
-  );
+      const data =
+        await loginUser(
+          email,
+          password
+        );
 
-  toast.success(
-    "Login Successful"
-  );
+      localStorage.setItem(
+        "token",
+        data.access_token
+      );
 
-  router.push(
-    "/dashboard"
-  );
+      localStorage.setItem(
+        "userEmail",
+        email
+      );
 
-} catch (error) {
+      toast.success(
+        "Login Successful"
+      );
 
-  console.log(error);
+      router.push(
+        "/dashboard"
+      );
 
-  toast.error(
-    "Invalid Credentials"
-  );
+    } catch (error) {
 
-} finally {
+      console.log(error);
 
-  setLoading(false);
+      toast.error(
+        "Invalid Credentials"
+      );
 
-}
- 
+    } finally {
 
-};
+      setLoading(false);
 
-return (
+    }
 
- 
-<div
-  className="
+
+  };
+
+  return (
+
+
+    <div
+      className="
   min-h-screen
   flex
   items-center
@@ -85,10 +90,10 @@ return (
   relative
   overflow-hidden
   "
->
+    >
 
-  <div
-    className="
+      <div
+        className="
     absolute
     w-96
     h-96
@@ -98,10 +103,10 @@ return (
     -top-20
     -left-20
     "
-  />
+      />
 
-  <div
-    className="
+      <div
+        className="
     absolute
     w-96
     h-96
@@ -111,10 +116,10 @@ return (
     bottom-0
     right-0
     "
-  />
+      />
 
-  <div
-    className="
+      <div
+        className="
     w-full
     max-w-md
     bg-zinc-900/70
@@ -127,12 +132,12 @@ return (
     relative
     z-10
     "
-  >
+      >
 
-    <div className="text-center mb-8">
+        <div className="text-center mb-8">
 
-      <h1
-        className="
+          <h1
+            className="
         text-4xl
         font-bold
         bg-gradient-to-r
@@ -141,36 +146,36 @@ return (
         bg-clip-text
         text-transparent
         "
-      >
-        InterviewAI
-      </h1>
+          >
+            InterviewAI
+          </h1>
 
-      <p
-        className="
+          <p
+            className="
         text-zinc-400
         mt-3
         "
-      >
-        Welcome Back 👋
-      </p>
+          >
+            Welcome Back 👋
+          </p>
 
-    </div>
+        </div>
 
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-4"
-    >
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4"
+        >
 
-      <input
-        type="email"
-        placeholder="Email Address"
-        value={email}
-        onChange={(e) =>
-          setEmail(
-            e.target.value
-          )
-        }
-        className="
+          <input
+            type="email"
+            placeholder="Email Address"
+            value={email}
+            onChange={(e) =>
+              setEmail(
+                e.target.value
+              )
+            }
+            className="
         w-full
         p-4
         rounded-xl
@@ -180,24 +185,24 @@ return (
         outline-none
         focus:border-blue-500
         "
-      />
+          />
 
-      <div className="relative">
+          <div className="relative">
 
-        <input
-          type={
-            showPassword
-              ? "text"
-              : "password"
-          }
-          placeholder="Password"
-          value={password}
-          onChange={(e) =>
-            setPassword(
-              e.target.value
-            )
-          }
-          className="
+            <input
+              type={
+                showPassword
+                  ? "text"
+                  : "password"
+              }
+              placeholder="Password"
+              value={password}
+              onChange={(e) =>
+                setPassword(
+                  e.target.value
+                )
+              }
+              className="
           w-full
           p-4
           rounded-xl
@@ -208,38 +213,38 @@ return (
           focus:border-blue-500
           pr-12
           "
-        />
+            />
 
-        <button
-          type="button"
-          onClick={() =>
-            setShowPassword(
-              !showPassword
-            )
-          }
-          className="
+            <button
+              type="button"
+              onClick={() =>
+                setShowPassword(
+                  !showPassword
+                )
+              }
+              className="
           absolute
           right-4
           top-1/2
           -translate-y-1/2
           text-zinc-400
           "
-        >
+            >
 
-          {
-            showPassword
-              ? <EyeOff size={18}/>
-              : <Eye size={18}/>
-          }
+              {
+                showPassword
+                  ? <EyeOff size={18} />
+                  : <Eye size={18} />
+              }
 
-        </button>
+            </button>
 
-      </div>
+          </div>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="
+          <button
+            type="submit"
+            disabled={loading}
+            className="
         w-full
         py-4
         rounded-xl
@@ -248,22 +253,22 @@ return (
         transition
         font-semibold
         "
-      >
+          >
 
-        {
-          loading ? (
+            {
+              loading ? (
 
-            <div
-              className="
+                <div
+                  className="
               flex
               items-center
               justify-center
               gap-2
               "
-            >
+                >
 
-              <div
-                className="
+                  <div
+                    className="
                 h-4
                 w-4
                 border-2
@@ -272,50 +277,50 @@ return (
                 rounded-full
                 animate-spin
                 "
-              />
+                  />
 
-              Logging In...
+                  Logging In...
 
-            </div>
+                </div>
 
-          ) : (
+              ) : (
 
-            "Login"
+                "Login"
 
-          )
-        }
+              )
+            }
 
-      </button>
+          </button>
 
-    </form>
+        </form>
 
-    <p
-      className="
+        <p
+          className="
       text-center
       mt-6
       text-zinc-400
       "
-    >
+        >
 
-      Don't have an account?
+          Don't have an account?
 
-      <Link
-        href="/signup"
-        className="
+          <Link
+            href="/signup"
+            className="
         text-blue-400
         ml-2
         "
-      >
-        Signup
-      </Link>
+          >
+            Signup
+          </Link>
 
-    </p>
+        </p>
 
-  </div>
+      </div>
 
-</div>
- 
+    </div>
 
-);
+
+  );
 
 }

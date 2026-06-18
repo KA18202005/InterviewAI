@@ -13,11 +13,10 @@ def generate_dashboard(
 
     all_scores = []
 
-    all_scores = []
-
     for interview in interviews:
 
-        # Old format
+        # Old format support
+
         all_scores.extend(
             interview.get(
                 "scores",
@@ -25,7 +24,8 @@ def generate_dashboard(
             )
         )
 
-        # New format
+        # New format support
+
         answers = interview.get(
             "answers",
             []
@@ -33,7 +33,10 @@ def generate_dashboard(
 
         for answer in answers:
 
-            if isinstance(answer, dict):
+            if isinstance(
+                answer,
+                dict
+            ):
 
                 score = answer.get(
                     "score",
@@ -82,6 +85,73 @@ def generate_dashboard(
             )
         )
 
+    # =====================
+    # Recent Activity
+    # =====================
+
+    recent_activity = []
+
+    # Resume Activity
+
+    for resume in resumes[-3:]:
+
+        score = (
+            resume
+            .get(
+                "analysis",
+                {}
+            )
+            .get(
+                "resume_score",
+                0
+            )
+        )
+
+        recent_activity.append(
+            f"📄 Resume analyzed (ATS Score: {score})"
+        )
+
+    # Interview Activity
+
+    for interview in interviews[-3:]:
+
+        answers = interview.get(
+            "answers",
+            []
+        )
+
+        scores = []
+
+        for answer in answers:
+
+            if isinstance(
+                answer,
+                dict
+            ):
+
+                scores.append(
+                    answer.get(
+                        "score",
+                        0
+                    )
+                )
+
+        if scores:
+
+            average = round(
+                sum(scores)
+                /
+                len(scores),
+                1
+            )
+
+            recent_activity.append(
+                f"🎤 Interview completed (Avg Score: {average})"
+            )
+
+    recent_activity = recent_activity[-6:]
+    recent_activity.reverse()
+
     return {
 
         "total_interviews":
@@ -103,5 +173,8 @@ def generate_dashboard(
             lowest_score,
 
         "latest_resume_score":
-            latest_resume_score
+            latest_resume_score,
+
+        "recent_activity":
+            recent_activity
     }

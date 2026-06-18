@@ -3,10 +3,24 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import SkeletonCard
+    from "@/components/SkeletonCard";
+
+import AnimatedCard
+    from "@/components/AnimatedCard";
 
 import Card from "@/components/Card";
 import PageContainer from "@/components/PageContainer";
 import SectionTitle from "@/components/SectionTitle";
+import {
+    ResponsiveContainer,
+    LineChart,
+    Line,
+    CartesianGrid,
+    XAxis,
+    YAxis,
+    Tooltip
+} from "recharts";
 
 import { getDashboardData } from "@/services/dashboardService";
 
@@ -14,6 +28,33 @@ export default function Dashboard() {
 
     const [data, setData] =
         useState(null);
+    const chartData = [
+
+        {
+            name: "Resume",
+            score:
+                data?.latest_resume_score || 0
+        },
+
+        {
+            name: "Average",
+            score:
+                data?.average_score || 0
+        },
+
+        {
+            name: "Highest",
+            score:
+                data?.highest_score || 0
+        },
+
+        {
+            name: "Lowest",
+            score:
+                data?.lowest_score || 0
+        }
+
+    ];
 
     useEffect(() => {
 
@@ -50,15 +91,29 @@ export default function Dashboard() {
 
                     <div
                         className="
-            flex
-            justify-center
-            items-center
-            h-[60vh]
-            text-zinc-400
-            text-xl
-            "
+                    mb-10
+                    rounded-3xl
+                    p-8
+                    bg-zinc-900
+                    animate-pulse
+                    h-40
+                    "
+                    />
+
+                    <div
+                        className="
+                    grid
+                    md:grid-cols-2
+                    lg:grid-cols-4
+                    gap-6
+                    "
                     >
-                        Loading Dashboard...
+
+                        <SkeletonCard />
+                        <SkeletonCard />
+                        <SkeletonCard />
+                        <SkeletonCard />
+
                     </div>
 
                 </PageContainer>
@@ -78,51 +133,55 @@ export default function Dashboard() {
 
                 {/* Hero Section */}
 
-                <div
-                    className="
-          mb-10
-          rounded-3xl
-          p-8
-          bg-gradient-to-r
-          from-blue-600/80
-          via-purple-600/80
-          to-pink-600/80
-          border
-          border-white/10
-          "
-                >
+                <AnimatedCard>
 
-                    <h1
+                    <div
                         className="
+        mb-10
+        rounded-3xl
+        p-8
+        bg-gradient-to-r
+        from-blue-600/80
+        via-purple-600/80
+        to-pink-600/80
+        border
+        border-white/10
+        "
+                    >
+
+                        <h1
+                            className="
             text-5xl
             font-bold
             text-white
             mb-3
             "
-                    >
-                        Welcome Back 👋
-                    </h1>
+                        >
+                            Welcome Back 👋
+                        </h1>
 
-                    <p
-                        className="
+                        <p
+                            className="
             text-lg
             text-white/90
             "
-                    >
-                        Track your interview preparation,
-                        resume performance and career growth.
-                    </p>
-                    <p
-                        className="
+                        >
+                            Track your interview preparation,
+                            resume performance and career growth.
+                        </p>
+                        <p
+                            className="
   text-lg
   text-white/80
   mt-2
   "
-                    >
-                        Ready to crack your next interview?
-                    </p>
+                        >
+                            Ready to crack your next interview?
+                        </p>
 
-                </div>
+                    </div>
+
+                </AnimatedCard>
 
                 <SectionTitle>
                     Dashboard Analytics
@@ -132,114 +191,68 @@ export default function Dashboard() {
 
                 <div
                     className="
-          grid
-          md:grid-cols-2
-          lg:grid-cols-4
-          gap-6
-          mb-10
-          "
+    grid
+    md:grid-cols-2
+    lg:grid-cols-4
+    gap-6
+    mb-10
+    "
                 >
 
-                    <Card>
+                    <AnimatedCard delay={0}>
+                        <Card>
+                            <p className="text-zinc-500 uppercase tracking-wider text-sm">
+                                Interviews
+                            </p>
 
-                        <p
-                            className="
-              text-zinc-500
-              uppercase
-              tracking-wider
-              text-sm
-              "
-                        >
-                            Interviews
-                        </p>
+                            <h2 className="text-6xl font-bold mt-3">
+                                {data.total_interviews}
+                            </h2>
+                        </Card>
+                    </AnimatedCard>
 
-                        <h2
-                            className="
-              text-6xl
-              font-bold
-              mt-3
-              "
-                        >
-                            {data.total_interviews}
-                        </h2>
+                    <AnimatedCard delay={0.1}>
+                        <Card>
+                            <p className="text-zinc-500 uppercase tracking-wider text-sm">
+                                Resumes
+                            </p>
 
-                    </Card>
+                            <h2 className="text-6xl font-bold mt-3">
+                                {data.total_resumes}
+                            </h2>
+                        </Card>
+                    </AnimatedCard>
 
-                    <Card>
+                    <AnimatedCard delay={0.2}>
+                        <Card>
+                            <p className="text-zinc-500 uppercase tracking-wider text-sm">
+                                Average Score
+                            </p>
 
-                        <p
-                            className="
-              text-zinc-500
-              uppercase
-              tracking-wider
-              text-sm
-              "
-                        >
-                            Resumes
-                        </p>
+                            <h2 className="text-6xl font-bold mt-3">
+                                {data.average_score}
+                            </h2>
+                        </Card>
+                    </AnimatedCard>
 
-                        <h2
-                            className="
-              text-6xl
-              font-bold
-              mt-3
-              "
-                        >
-                            {data.total_resumes}
-                        </h2>
+                    <AnimatedCard delay={0.3}>
+                        <Card>
+                            <p className="text-zinc-500 uppercase tracking-wider text-sm">
+                                Resume ATS
+                            </p>
 
-                    </Card>
-
-                    <Card>
-
-                        <p
-                            className="
-              text-zinc-500
-              uppercase
-              tracking-wider
-              text-sm
-              "
-                        >
-                            Average Score
-                        </p>
-
-                        <h2
-                            className="
-              text-6xl
-              font-bold
-              mt-3
-              "
-                        >
-                            {data.average_score}
-                        </h2>
-
-                    </Card>
-
-                    <Card>
-
-                        <p
-                            className="
-              text-zinc-500
-              uppercase
-              tracking-wider
-              text-sm
-              "
-                        >
-                            Resume ATS
-                        </p>
-
-                        <h2
-                            className="
-              text-6xl
-              font-bold
-              mt-3
-              text-green-400
-              "
-                        >
-                            {data.latest_resume_score}
-                        </h2>
-
-                    </Card>
+                            <h2
+                                className="
+                text-6xl
+                font-bold
+                mt-3
+                text-green-400
+                "
+                            >
+                                {data.latest_resume_score}
+                            </h2>
+                        </Card>
+                    </AnimatedCard>
 
                 </div>
 
@@ -247,10 +260,10 @@ export default function Dashboard() {
 
                 <div
                     className="
-          grid
-          lg:grid-cols-2
-          gap-6
-          "
+    grid
+    lg:grid-cols-3
+    gap-6
+    "
                 >
 
                     {/* Performance */}
@@ -259,18 +272,18 @@ export default function Dashboard() {
 
                         <h2
                             className="
-              text-2xl
-              font-bold
-              mb-6
-              "
+            text-2xl
+            font-bold
+            mb-6
+            "
                         >
                             Performance
                         </h2>
 
                         <div
                             className="
-              space-y-4
-              "
+            space-y-4
+            "
                         >
 
                             <div
@@ -283,18 +296,18 @@ export default function Dashboard() {
 
                                 <p
                                     className="
-                  text-zinc-400
-                  "
+                    text-zinc-400
+                    "
                                 >
                                     Highest Score
                                 </p>
 
                                 <h3
                                     className="
-                  text-4xl
-                  font-bold
-                  text-green-400
-                  "
+                    text-4xl
+                    font-bold
+                    text-green-400
+                    "
                                 >
                                     {data.highest_score}
                                 </h3>
@@ -311,23 +324,79 @@ export default function Dashboard() {
 
                                 <p
                                     className="
-                  text-zinc-400
-                  "
+                    text-zinc-400
+                    "
                                 >
                                     Lowest Score
                                 </p>
 
                                 <h3
                                     className="
-                  text-4xl
-                  font-bold
-                  text-red-400
-                  "
+                    text-4xl
+                    font-bold
+                    text-red-400
+                    "
                                 >
                                     {data.lowest_score}
                                 </h3>
 
                             </div>
+
+                        </div>
+
+                    </Card>
+
+                    {/* Chart */}
+
+                    <Card>
+
+                        <h2
+                            className="
+            text-2xl
+            font-bold
+            mb-6
+            "
+                        >
+                            Analytics Trend
+                        </h2>
+
+                        <div
+                            className="
+            h-[280px]
+            "
+                        >
+
+                            <ResponsiveContainer
+                                width="100%"
+                                height="100%"
+                            >
+
+                                <LineChart
+                                    data={chartData}
+                                >
+
+                                    <CartesianGrid
+                                        strokeDasharray="3 3"
+                                    />
+
+                                    <XAxis
+                                        dataKey="name"
+                                    />
+
+                                    <YAxis />
+
+                                    <Tooltip />
+
+                                    <Line
+                                        type="monotone"
+                                        dataKey="score"
+                                        stroke="#3b82f6"
+                                        strokeWidth={3}
+                                    />
+
+                                </LineChart>
+
+                            </ResponsiveContainer>
 
                         </div>
 
@@ -339,32 +408,31 @@ export default function Dashboard() {
 
                         <h2
                             className="
-    text-2xl
-    font-bold
-    mb-6
-    "
+            text-2xl
+            font-bold
+            mb-6
+            "
                         >
                             Quick Actions
                         </h2>
 
                         <div
                             className="
-    flex
-    flex-col
-    gap-4
-    "
+            flex
+            flex-col
+            gap-4
+            "
                         >
 
                             <Link
                                 href="/resume"
                                 className="
-      bg-zinc-800/50
-      rounded-2xl
-      p-4
-      hover:bg-zinc-700/50
-      transition
-      cursor-pointer
-      "
+                bg-zinc-800/50
+                rounded-2xl
+                p-4
+                hover:bg-zinc-700/50
+                transition
+                "
                             >
                                 📄 Analyze Resume
                             </Link>
@@ -372,13 +440,12 @@ export default function Dashboard() {
                             <Link
                                 href="/job-match"
                                 className="
-      bg-zinc-800/50
-      rounded-2xl
-      p-4
-      hover:bg-zinc-700/50
-      transition
-      cursor-pointer
-      "
+                bg-zinc-800/50
+                rounded-2xl
+                p-4
+                hover:bg-zinc-700/50
+                transition
+                "
                             >
                                 🎯 Match Job Description
                             </Link>
@@ -386,13 +453,12 @@ export default function Dashboard() {
                             <Link
                                 href="/interview"
                                 className="
-      bg-zinc-800/50
-      rounded-2xl
-      p-4
-      hover:bg-zinc-700/50
-      transition
-      cursor-pointer
-      "
+                bg-zinc-800/50
+                rounded-2xl
+                p-4
+                hover:bg-zinc-700/50
+                transition
+                "
                             >
                                 🎤 Start Mock Interview
                             </Link>
@@ -400,13 +466,12 @@ export default function Dashboard() {
                             <Link
                                 href="/roadmap"
                                 className="
-      bg-zinc-800/50
-      rounded-2xl
-      p-4
-      hover:bg-zinc-700/50
-      transition
-      cursor-pointer
-      "
+                bg-zinc-800/50
+                rounded-2xl
+                p-4
+                hover:bg-zinc-700/50
+                transition
+                "
                             >
                                 🗺 Generate Roadmap
                             </Link>
@@ -415,8 +480,6 @@ export default function Dashboard() {
 
                     </Card>
 
-
-
                 </div>
                 <div
                     className="
@@ -424,57 +487,72 @@ export default function Dashboard() {
   "
                 >
 
-                    <Card>
+                    <AnimatedCard delay={0.4}>
 
-                        <h2
-                            className="
+                        <Card>
+
+                            <h2
+                                className="
       text-2xl
       font-bold
       mb-6
       "
-                        >
-                            Recent Activity
-                        </h2>
-
-                        <div
-                            className="
-      space-y-4
-      "
-                        >
+                            >
+                                Recent Activity
+                            </h2>
 
                             <div
                                 className="
-        bg-zinc-900
-        p-4
-        rounded-xl
-        "
+    space-y-4
+    "
                             >
-                                📄 Resume analyzed
+
+                                {
+                                    data.recent_activity?.length > 0 ? (
+
+                                        data.recent_activity.map(
+                                            (
+                                                activity,
+                                                index
+                                            ) => (
+
+                                                <div
+                                                    key={index}
+                                                    className="
+                        bg-zinc-900
+                        p-4
+                        rounded-xl
+                        border
+                        border-zinc-800
+                        "
+                                                >
+                                                    {activity}
+                                                </div>
+
+                                            )
+                                        )
+
+                                    ) : (
+
+                                        <div
+                                            className="
+                bg-zinc-900
+                p-4
+                rounded-xl
+                text-zinc-400
+                "
+                                        >
+                                            No activity yet.
+                                        </div>
+
+                                    )
+                                }
+
                             </div>
 
-                            <div
-                                className="
-        bg-zinc-900
-        p-4
-        rounded-xl
-        "
-                            >
-                                🎤 Mock interview completed
-                            </div>
+                        </Card>
 
-                            <div
-                                className="
-        bg-zinc-900
-        p-4
-        rounded-xl
-        "
-                            >
-                                🎯 Job match generated
-                            </div>
-
-                        </div>
-
-                    </Card>
+                    </AnimatedCard>
 
                 </div>
 

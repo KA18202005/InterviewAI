@@ -6,7 +6,17 @@ import Navbar from "@/components/Navbar";
 import Card from "@/components/Card";
 import Button from "@/components/Button";
 import PageContainer from "@/components/PageContainer";
-import ScoreCircle from "@/components/ScoreCircle";
+import {
+  CircularProgressbar,
+  buildStyles
+} from "react-circular-progressbar";
+
+import "react-circular-progressbar/dist/styles.css";
+
+import {
+  downloadReport
+}
+  from "@/services/pdfService";
 
 import { startInterview } from "@/services/interviewService";
 import { evaluateAnswer } from "@/services/interviewEvaluationService";
@@ -15,6 +25,8 @@ export default function InterviewPage() {
 
   const [resumeText, setResumeText] =
     useState("");
+  const [completedQuestions, setCompletedQuestions] =
+    useState([]);
 
   const [isRecording, setIsRecording] =
     useState(false);
@@ -42,6 +54,39 @@ export default function InterviewPage() {
 
   const [loading, setLoading] =
     useState(false);
+
+  const handleDownload =
+    async () => {
+
+      const pdf =
+        await downloadReport(
+
+          selectedQuestion,
+
+          answer,
+
+          evaluation
+
+        );
+
+      const url =
+        window.URL.createObjectURL(
+          pdf
+        );
+
+      const link =
+        document.createElement(
+          "a"
+        );
+
+      link.href = url;
+
+      link.download =
+        "Interview_Report.pdf";
+
+      link.click();
+
+    };
 
   const handleGenerate = async () => {
 
@@ -95,6 +140,25 @@ export default function InterviewPage() {
 
       setEvaluation(
         result
+      );
+
+      setCompletedQuestions(
+        prev => {
+
+          if (
+            prev.includes(
+              selectedQuestion
+            )
+          ) {
+            return prev;
+          }
+
+          return [
+            ...prev,
+            selectedQuestion
+          ];
+
+        }
       );
 
     } catch (error) {
@@ -214,33 +278,120 @@ export default function InterviewPage() {
                     q
                   );
 
-                  setAnswer("");
-
                   setEvaluation(
                     null
                   );
 
                 }}
-                className={`
-              p-4
-              rounded-xl
-              cursor-pointer
-              transition-all
-              border
 
-              ${selectedQuestion === q
+                className={`
+    p-4
+    rounded-2xl
+    border
+    cursor-pointer
+    transition-all
+
+    ${selectedQuestion === q
+
                     ? `
-                  border-blue-500
-                  bg-blue-500/10
-                  `
+          border-blue-500
+          bg-blue-500/10
+          shadow-lg
+          shadow-blue-500/10
+        `
+
                     : `
-                  border-zinc-800
-                  hover:border-zinc-600
-                  `
+          border-zinc-800
+          hover:border-zinc-600
+          hover:bg-zinc-900
+        `
                   }
-            `}
+  `}
               >
-                {q}
+
+                <div
+                  className="
+    flex
+    items-start
+    gap-3
+    "
+                >
+
+                  <div
+                    className={`
+      h-8
+      w-8
+      rounded-full
+      flex
+      items-center
+      justify-center
+      text-sm
+      font-bold
+
+      ${selectedQuestion === q
+
+                        ? `
+            bg-blue-500
+            text-white
+          `
+
+                        : `
+            bg-zinc-800
+          `
+                      }
+      `}
+                  >
+                    {index + 1}
+                  </div>
+
+                  <div
+                    className="
+      flex-1
+      "
+                  >
+
+                    <p>
+                      {q}
+                    </p>
+
+                  </div>
+
+                  {
+                    completedQuestions.includes(q)
+
+                      ? (
+
+                        <div
+                          className="
+        text-green-400
+        text-lg
+        "
+                        >
+                          ✓
+                        </div>
+
+                      )
+
+                      : selectedQuestion === q
+
+                        ? (
+
+                          <div
+                            className="
+          text-blue-400
+          text-lg
+          "
+                          >
+                            ●
+                          </div>
+
+                        )
+
+                        : null
+                  }
+
+                </div>
+
               </div>
 
             )
@@ -330,36 +481,127 @@ export default function InterviewPage() {
 
         </Card>
 
+
+
         {
           questions && (
+            <>
+              <Card>
 
-            <div className="space-y-6">
+                <div
+                  className="
+    flex
+    justify-between
+    items-center
+    mb-4
+    "
+                >
 
-              {
-                renderQuestions(
-                  "Technical Questions",
-                  "text-blue-400",
-                  questions.technical_questions
-                )
-              }
+                  <h2
+                    className="
+      text-2xl
+      font-bold
+      "
+                  >
+                    Interview Progress
+                  </h2>
 
-              {
-                renderQuestions(
-                  "Behavioral Questions",
-                  "text-green-400",
-                  questions.behavioral_questions
-                )
-              }
+                  <span
+                    className="
+      text-blue-400
+      font-semibold
+      "
+                  >
+                    {
+                      completedQuestions.length
+                    }
+                    /
+                    {
+                      (
+                        questions.technical_questions?.length || 0
+                      ) +
+                      (
+                        questions.behavioral_questions?.length || 0
+                      ) +
+                      (
+                        questions.project_questions?.length || 0
+                      )
+                    }
+                    Completed
+                  </span>
 
-              {
-                renderQuestions(
-                  "Project Questions",
-                  "text-purple-400",
-                  questions.project_questions
-                )
-              }
+                </div>
 
-            </div>
+                <div
+                  className="
+    h-3
+    bg-zinc-800
+    rounded-full
+    overflow-hidden
+    "
+                >
+
+                  <div
+                    className="
+      h-full
+      bg-gradient-to-r
+      from-blue-500
+      to-purple-500
+      transition-all
+      duration-500
+      "
+                    style={{
+                      width: `${(
+                        completedQuestions.length /
+                        (
+                          (
+                            questions.technical_questions?.length || 0
+                          ) +
+                          (
+                            questions.behavioral_questions?.length || 0
+                          ) +
+                          (
+                            questions.project_questions?.length || 0
+                          )
+                        )
+                      ) * 100
+                        }%`
+                    }}
+                  />
+
+                </div>
+
+              </Card>
+
+              <div className=" grid lg:grid-cols-3 gap-6">
+                {
+                  renderQuestions(
+                    "Technical Questions",
+                    "text-blue-400",
+                    questions.technical_questions
+                  )
+                }
+
+                {
+                  renderQuestions(
+                    "Behavioral Questions",
+                    "text-green-400",
+                    questions.behavioral_questions
+                  )
+                }
+
+                {
+                  renderQuestions(
+                    "Project Questions",
+                    "text-purple-400",
+                    questions.project_questions
+                  )
+                }
+
+              </div>
+            </>
+
+
 
           )
         }
@@ -381,13 +623,77 @@ export default function InterviewPage() {
 
               <div
                 className="
-            bg-zinc-900
-            rounded-xl
-            p-5
-            mb-5
-            "
+  bg-gradient-to-r
+  from-blue-500/10
+  via-purple-500/10
+  to-pink-500/10
+
+  border
+  border-blue-500/20
+
+  rounded-3xl
+
+  p-6
+
+  mb-6
+  "
               >
-                {selectedQuestion}
+
+                <div
+                  className="
+    flex
+    items-center
+    gap-3
+    mb-4
+    "
+                >
+
+                  <div
+                    className="
+      h-10
+      w-10
+      rounded-xl
+      bg-blue-500
+      flex
+      items-center
+      justify-center
+      "
+                  >
+                    🎯
+                  </div>
+
+                  <div>
+
+                    <p
+                      className="
+        text-sm
+        text-zinc-400
+        "
+                    >
+                      Current Question
+                    </p>
+
+                    <h3
+                      className="
+        font-semibold
+        "
+                    >
+                      AI Interview Question
+                    </h3>
+
+                  </div>
+
+                </div>
+
+                <p
+                  className="
+    text-lg
+    leading-relaxed
+    "
+                >
+                  {selectedQuestion}
+                </p>
+
               </div>
 
               <textarea
@@ -399,18 +705,70 @@ export default function InterviewPage() {
                   )
                 }
                 className="
-            border
-            border-zinc-700
-            rounded-xl
-            p-4
-            w-full
-            h-48
-            "
+                    w-full
+                    h-52
+
+                    bg-zinc-900
+
+                    border
+                    border-zinc-800
+
+                    rounded-3xl
+
+                    p-5
+
+                    focus:outline-none
+                    focus:border-blue-500
+
+                    transition-all
+                    "
               />
+              <div
+                className="
+                  text-right
+                  text-zinc-500
+                  text-sm
+                  mt-2
+                  "
+              >
+                {answer.length} characters
+              </div>
 
               <div className="mt-5">
 
                 <div className="flex gap-4 mt-5 flex-wrap">
+
+                  {
+                    isRecording && (
+
+                      <div
+                        className="
+                              flex
+                              items-center
+                              gap-3
+                              text-red-400
+                              mb-4
+                              "
+                      >
+
+                        <div
+                          className="
+                                      h-3
+                                      w-3
+                                      bg-red-500
+                                      rounded-full
+                                      animate-pulse
+                                      "
+                        />
+
+                        <span>
+                          Listening...
+                        </span>
+
+                      </div>
+
+                    )
+                  }
 
                   {
                     !isRecording ? (
@@ -418,7 +776,11 @@ export default function InterviewPage() {
                       <Button
                         onClick={startRecording}
                       >
-                        🎙 Start Recording
+                        {
+                          !isRecording
+                            ? "🎙 Start Recording"
+                            : "🔴 Recording..."
+                        }
                       </Button>
 
                     ) : (
@@ -434,8 +796,12 @@ export default function InterviewPage() {
 
                   <Button
                     onClick={handleEvaluate}
+                    className="
+                          w-full
+                          mt-4
+                          "
                   >
-                    Evaluate Answer
+                    🚀 Evaluate My Answer
                   </Button>
 
                 </div>
@@ -454,12 +820,57 @@ export default function InterviewPage() {
 
               <Card>
 
-                <ScoreCircle
-                  score={
-                    evaluation.score
-                  }
-                  label="Interview Score"
-                />
+                <h2
+                  className="
+    text-2xl
+    font-bold
+    text-center
+    mb-8
+    "
+                >
+                  Interview Score
+                </h2>
+
+                <div
+                  className="
+    w-56
+    h-56
+    mx-auto
+    "
+                >
+
+                  <CircularProgressbar
+                    value={evaluation.score}
+                    text={`${evaluation.score}%`}
+                    styles={buildStyles({
+
+                      pathColor:
+                        evaluation.score >= 80
+                          ? "#22c55e"
+                          : evaluation.score >= 60
+                            ? "#eab308"
+                            : "#ef4444",
+
+                      textColor:
+                        "#ffffff",
+
+                      trailColor:
+                        "#27272a"
+
+                    })}
+                  />
+
+                </div>
+
+                <p
+                  className="
+    text-center
+    text-zinc-400
+    mt-6
+    "
+                >
+                  AI Evaluation Result
+                </p>
 
               </Card>
 
@@ -574,6 +985,17 @@ export default function InterviewPage() {
 
               </Card>
 
+              <Card>
+
+                <Button
+                  onClick={
+                    handleDownload
+                  }
+                >
+                  📄 Download Interview Report
+                </Button>
+
+              </Card>
             </div>
 
           )

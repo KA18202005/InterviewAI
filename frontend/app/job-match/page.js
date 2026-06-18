@@ -6,7 +6,15 @@ import Navbar from "@/components/Navbar";
 import Card from "@/components/Card";
 import Button from "@/components/Button";
 import PageContainer from "@/components/PageContainer";
-import ScoreCircle from "@/components/ScoreCircle";
+import {
+  CircularProgressbar,
+  buildStyles
+} from "react-circular-progressbar";
+
+import "react-circular-progressbar/dist/styles.css";
+
+import AnimatedCard
+  from "@/components/AnimatedCard";
 
 import { matchJob } from "@/services/jobService";
 
@@ -96,7 +104,7 @@ export default function JobMatchPage() {
           >
 
             <textarea
-              placeholder="Paste Resume Text Here..."
+              placeholder="Paste Resume Text"
               value={resumeText}
               onChange={(e) =>
                 setResumeText(
@@ -114,7 +122,7 @@ export default function JobMatchPage() {
             />
 
             <textarea
-              placeholder="Paste Job Description Here..."
+              placeholder="Paste Job Description"
               value={jobDescription}
               onChange={(e) =>
                 setJobDescription(
@@ -160,16 +168,67 @@ export default function JobMatchPage() {
 
               {/* Score */}
 
-              <Card>
+              <AnimatedCard>
 
-                <ScoreCircle
-                  score={
-                    result.match_score
-                  }
-                  label="Match Score"
-                />
+                <Card>
 
-              </Card>
+                  <h2
+                    className="
+      text-2xl
+      font-bold
+      text-center
+      mb-8
+      "
+                  >
+                    AI Match Score
+                  </h2>
+
+                  <div
+                    className="
+      w-56
+      h-56
+      mx-auto
+      "
+                  >
+
+                    <CircularProgressbar
+                      value={
+                        result.match_score
+                      }
+                      text={`${result.match_score}%`}
+                      styles={buildStyles({
+
+                        pathColor:
+                          result.match_score >= 80
+                            ? "#22c55e"
+                            : result.match_score >= 60
+                              ? "#eab308"
+                              : "#ef4444",
+
+                        textColor:
+                          "#ffffff",
+
+                        trailColor:
+                          "#27272a"
+
+                      })}
+                    />
+
+                  </div>
+
+                  <p
+                    className="
+      text-center
+      text-zinc-400
+      mt-6
+      "
+                  >
+                    ML + AI Powered Matching
+                  </p>
+
+                </Card>
+
+              </AnimatedCard>
 
               {/* Skills */}
 
@@ -183,57 +242,64 @@ export default function JobMatchPage() {
 
                 {/* Matching */}
 
-                <Card>
+                <AnimatedCard delay={0.1}>
 
-                  <h2
-                    className="
+                  <Card>
+
+                    <h2
+                      className="
                     text-2xl
                     font-bold
                     text-green-400
                     mb-5
                     "
-                  >
-                    Matching Skills
-                  </h2>
+                    >
+                      Matching Skills
+                    </h2>
 
-                  <div
-                    className="
+                    <div
+                      className="
                     flex
                     flex-wrap
                     gap-3
                     "
-                  >
+                    >
 
-                    {
-                      result.matching_skills?.map(
-                        (
-                          skill,
-                          index
-                        ) => (
+                      {
+                        result.matching_skills?.map(
+                          (
+                            skill,
+                            index
+                          ) => (
 
-                          <span
-                            key={index}
-                            className="
-                            bg-green-500
-                            text-white
-                            px-4
-                            py-2
-                            rounded-full
-                            text-sm
-                            "
-                          >
-                            {skill}
-                          </span>
+                            <span
+                              key={index}
+                             className="
+                              bg-green-500/10
+                              text-green-400
+                              border
+                              border-green-500/20
+                              px-4
+                              py-2
+                              rounded-full
+                              text-sm
+                              "
+                            >
+                              {skill}
+                            </span>
 
+                          )
                         )
-                      )
-                    }
+                      }
 
-                  </div>
+                    </div>
 
-                </Card>
+                  </Card>
+
+                </AnimatedCard>
 
                 {/* Missing */}
+                <AnimatedCard delay={0.2}>
 
                 <Card>
 
@@ -262,34 +328,39 @@ export default function JobMatchPage() {
                           skill,
                           index
                         ) => (
-
+                          
                           <span
-                            key={index}
-                            className="
-                            bg-red-500
-                            text-white
-                            px-4
-                            py-2
-                            rounded-full
-                            text-sm
-                            "
+                          key={index}
+                          className="
+                                bg-red-500/10
+                                text-red-400
+                                border
+                                border-red-500/20
+                                px-4
+                                py-2
+                                rounded-full
+                                text-sm
+                                "
                           >
                             {skill}
                           </span>
 
-                        )
+)
                       )
                     }
 
                   </div>
 
                 </Card>
+</AnimatedCard>
 
               </div>
 
               {/* Suggestions */}
 
-              <Card>
+              <AnimatedCard delay={0.3}>
+
+                <Card>
 
                 <h2
                   className="
@@ -317,11 +388,13 @@ export default function JobMatchPage() {
                         <div
                           key={index}
                           className="
-                          bg-blue-500/10
+                          bg-zinc-900
                           border
-                          border-blue-500/20
-                          rounded-xl
+                          border-zinc-800
+                          rounded-2xl
                           p-4
+                          hover:border-blue-500/30
+                          transition
                           "
                         >
                           💡 {item}
@@ -334,7 +407,7 @@ export default function JobMatchPage() {
                 </div>
 
               </Card>
-
+              </AnimatedCard>
             </div>
 
           )
