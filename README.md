@@ -193,14 +193,21 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 
 ## 📸 Screenshots
 
-Add screenshots here:
+### Homepage
 
-* Homepage
-* Dashboard
-* Resume Analysis
-* Job Match
-* Interview Simulator
-* Cover Letter Generator
+![Homepage](screenshots/homepage.png)
+
+### Dashboard
+
+![Dashboard](screenshots/dashboard.png)
+
+### Resume Analysis
+
+![Resume Analysis](screenshots/resume_analysis.png)
+
+### AI Interview Simulator
+
+![Interview](screenshots/interview_simulator.png)
 
 ---
 
